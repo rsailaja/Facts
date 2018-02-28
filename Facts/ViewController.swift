@@ -7,15 +7,50 @@
 //
 
 import UIKit
+import Alamofire
 
-class ViewController: UIViewController {
+class ViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     final let url = URL(string: "https://dl.dropboxusercontent.com/s/2iodh4vg0eortkl/facts.json")
     private var rows = [Row]()
+    
+    @IBOutlet weak var facesTableView: UITableView!
+
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return rows.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "factCell", for: indexPath) as! TableViewCell
+        print("4")
+        
+        //getting the details for the specified row
+        let row = self.rows[indexPath.row]
+        print("5")
+        //displaying values
+        cell.titleLbl?.text = row.title
+        cell.descLbl.text = row.description
+        //        cell.factRowImage?.image = UIImage(named: "Default.png")
+        
+        return cell
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         downloadJson()
+        //traversing through all elements of the array
+        for i in 0..<self.rows.count{
+            //adding row values to the facts list
+            self.rows.append(Row(
+                title: ((self.rows[i] as AnyObject).value(forKey: "title") as? String)!,
+                description: ((self.rows[i] as AnyObject).value(forKey: "description") as? String)!,
+                imageHref: ((self.rows[i] as AnyObject).value(forKey: "imageHref") as? String)!
+            ))
+            
+        }
         
+        //displaying data in tableview
+        self.facesTableView.reloadData()
     }
 
     func downloadJson() {
@@ -29,23 +64,23 @@ class ViewController: UIViewController {
             print(data)
             do
             {
-                let responseStrInISOLatin = String(data: data, encoding: String.Encoding.isoLatin1)
-                guard let modifiedDataInUTF8Format = responseStrInISOLatin?.data(using: String.Encoding.utf8) else {
+                let responseStr = String(data: data, encoding: String.Encoding.isoLatin1)
+                guard let newResponseInUTF8Format = responseStr?.data(using: String.Encoding.utf8) else {
                     print("could not convert data to UTF-8 format")
                     return
                 }
                 do {
-                    let responseJSONDict = try JSONSerialization.jsonObject(with: modifiedDataInUTF8Format)
+                    let responseJSONDict = try JSONSerialization.jsonObject(with: newResponseInUTF8Format)
                     print(responseJSONDict)
-                    let json = try JSONSerialization.jsonObject(with: modifiedDataInUTF8Format) as? [String: Any]
+                    let json = try JSONSerialization.jsonObject(with: newResponseInUTF8Format) as? [String: Any]
                     let eventTitle = json!["title"] as? String
                     print(eventTitle)
-                    let blogs = json!["rows"] as? [[String: Any]]
-                    for blog in blogs!{
-                        print(blog["title"])
+                    let factRows = json!["rows"] as? [[String: Any]]
+                    for factRow in factRows!{
+                        print(factRow["title"])
+//                        let row = Row.init(title: factRow["title"] as! String, description: factRow["description"] as! String, imageHref: factRow["imaheHref"] as! String)
+//                        self.rows.append(row)
                     }
-                } catch {
-                    print(error)
                 }
             } catch let err{
                 print("something wrong after downloaded")
@@ -53,6 +88,7 @@ class ViewController: UIViewController {
             }
             }.resume()
     }
+    
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
