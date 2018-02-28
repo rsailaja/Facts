@@ -7,3 +7,14 @@
 //
 
 import Foundation
+
+struct Facts: Codable {
+    let title: String
+    let rows: [Row]
+}
+
+struct Row: Codable {
+    let title: String
+    let description: String
+    let imageHref: String
+}
