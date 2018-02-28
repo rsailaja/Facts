@@ -366,6 +366,7 @@
 				DEVELOPMENT_TEAM = C8JBKU7RUH;
 				INFOPLIST_FILE = Facts/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = com.snet.apps.Facts;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
@@ -382,6 +383,7 @@
 				DEVELOPMENT_TEAM = C8JBKU7RUH;
 				INFOPLIST_FILE = Facts/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = com.snet.apps.Facts;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
