@@ -38,8 +38,8 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             cell.factRowImage.image = UIImage(named: "default.png")
             
         }
-//        let image = UIImage(named:row.imageHref!)
-//        cell.setPostedImage(image: image!)
+        //        let image = UIImage(named:row.imageHref!)
+        //        cell.setPostedImage(image: image!)
         
         return cell
     }
@@ -48,9 +48,9 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         super.viewDidLoad()
         downloadJson()
         
-//        facesTableView.estimatedRowHeight = 200
-//        facesTableView.rowHeight = UITableViewAutomaticDimension
-//        
+        //        facesTableView.estimatedRowHeight = 200
+        //        facesTableView.rowHeight = UITableViewAutomaticDimension
+        //
         //displaying data in tableview
         self.facesTableView.reloadData()
     }
@@ -71,30 +71,30 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                     print("could not convert data to UTF-8 format")
                     return
                 }
-                    let responseJSONDict = try JSONSerialization.jsonObject(with: newResponseInUTF8Format)
-                    print(responseJSONDict)
-                    let json = try JSONSerialization.jsonObject(with: newResponseInUTF8Format) as? [String: Any]
+                let responseJSONDict = try JSONSerialization.jsonObject(with: newResponseInUTF8Format)
+                print(responseJSONDict)
+                let json = try JSONSerialization.jsonObject(with: newResponseInUTF8Format) as? [String: Any]
                 
-                    let eventTitle = json!["title"] as? String
-                    print(eventTitle as Any)
+                let eventTitle = json!["title"] as? String
+                print(eventTitle as Any)
                 
-                    let factRows = json!["rows"] as? [[String: Any]]
+                let factRows = json!["rows"] as? [[String: Any]]
                 if let unWrappedRows = factRows{
                     for factRow in unWrappedRows{
-                            let newRow = Row.init(title: factRow["title"] as? String, description: factRow["description"] as? String, imageHref: factRow["imageHref"] as? String)
+                        let newRow = Row.init(title: factRow["title"] as? String, description: factRow["description"] as? String, imageHref: factRow["imageHref"] as? String)
                         self.rows.append(newRow)
                     }
                 }
                 DispatchQueue.main.async(execute: { () -> Void in
                     self.facesTableView.reloadData()
                 })
-
+                
             } catch let err{
                 print("something wrong after downloaded")
                 print(err)
             }
             }.resume()
-
+        
     }
     
     
@@ -102,7 +102,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-
-
+    
+    
 }
 
