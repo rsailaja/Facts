@@ -14,12 +14,13 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     private var rows = [Row]()
     
     @IBOutlet weak var facesTableView: UITableView!
-
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return rows.count
     }
-    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 200
+    }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "factCell", for: indexPath) as! TableViewCell
         print("4")
@@ -28,9 +29,17 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         let row = self.rows[indexPath.row]
         print("5")
         //displaying values
-        cell.titleLbl?.text = row.title
-        cell.descLbl.text = row.description
-        //        cell.factRowImage?.image = UIImage(named: "Default.png")
+        cell.titleLbl.text = row.title ?? ""
+        cell.descLbl.text = row.description ?? ""
+        
+        if let imageUrl = row.imageHref {
+            cell.factRowImage.loadImageUsingCache(withUrl: imageUrl)
+        }else{
+            cell.factRowImage.image = UIImage(named: "default.png")
+            
+        }
+//        let image = UIImage(named:row.imageHref!)
+//        cell.setPostedImage(image: image!)
         
         return cell
     }
@@ -38,21 +47,14 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     override func viewDidLoad() {
         super.viewDidLoad()
         downloadJson()
-        //traversing through all elements of the array
-        for i in 0..<self.rows.count{
-            //adding row values to the facts list
-            self.rows.append(Row(
-                title: ((self.rows[i] as AnyObject).value(forKey: "title") as? String)!,
-                description: ((self.rows[i] as AnyObject).value(forKey: "description") as? String)!,
-                imageHref: ((self.rows[i] as AnyObject).value(forKey: "imageHref") as? String)!
-            ))
-            
-        }
         
+//        facesTableView.estimatedRowHeight = 200
+//        facesTableView.rowHeight = UITableViewAutomaticDimension
+//        
         //displaying data in tableview
         self.facesTableView.reloadData()
     }
-
+    
     func downloadJson() {
         guard let downloadURL = url else { return }
         URLSession.shared.dataTask(with: downloadURL) { data, urlResponse, error in
@@ -69,24 +71,30 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                     print("could not convert data to UTF-8 format")
                     return
                 }
-                do {
                     let responseJSONDict = try JSONSerialization.jsonObject(with: newResponseInUTF8Format)
                     print(responseJSONDict)
                     let json = try JSONSerialization.jsonObject(with: newResponseInUTF8Format) as? [String: Any]
+                
                     let eventTitle = json!["title"] as? String
-                    print(eventTitle)
+                    print(eventTitle as Any)
+                
                     let factRows = json!["rows"] as? [[String: Any]]
-                    for factRow in factRows!{
-                        print(factRow["title"])
-//                        let row = Row.init(title: factRow["title"] as! String, description: factRow["description"] as! String, imageHref: factRow["imaheHref"] as! String)
-//                        self.rows.append(row)
+                if let unWrappedRows = factRows{
+                    for factRow in unWrappedRows{
+                            let newRow = Row.init(title: factRow["title"] as? String, description: factRow["description"] as? String, imageHref: factRow["imageHref"] as? String)
+                        self.rows.append(newRow)
                     }
                 }
+                DispatchQueue.main.async(execute: { () -> Void in
+                    self.facesTableView.reloadData()
+                })
+
             } catch let err{
                 print("something wrong after downloaded")
                 print(err)
             }
             }.resume()
+
     }
     
     

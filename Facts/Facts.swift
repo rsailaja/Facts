@@ -14,7 +14,7 @@ struct Facts: Codable {
 }
 
 struct Row: Codable {
-    let title: String
-    let description: String
-    let imageHref: String
+    let title: String?
+    let description: String?
+    let imageHref: String?
 }
