@@ -14,46 +14,47 @@ class TableViewCell: UITableViewCell {
     @IBOutlet weak var titleLbl: UILabel!
     @IBOutlet weak var factRowImage: UIImageView!
     
-    internal var aspectConstraint : NSLayoutConstraint? {
-        didSet {
-            if oldValue != nil {
-                factRowImage.removeConstraint(oldValue!)
-            }
-            if aspectConstraint != nil {
-                aspectConstraint?.priority = UILayoutPriority(rawValue: 999)
-                factRowImage.addConstraint(aspectConstraint!)
-            }
-        }
-    }
 }
 
 let imageCache = NSCache<NSString, AnyObject>()
 
 extension UIImageView {
-    func loadImageUsingCache(withUrl urlString : String) {
-        let url = URL(string: urlString)
-        self.image = nil
+    func loadImageUsingCache(_ urlString: String) {
         
+        guard let url = URL(string: urlString) else {
+            print("Empty URL")
+            self.image = (UIImage(named: "default.png"))
+            return
+        }
+        self.image = nil
         // check cached image
         if let cachedImage = imageCache.object(forKey: urlString as NSString) as? UIImage {
             self.image = cachedImage
             return
         }
-        
         // if not, download image from url
-        URLSession.shared.dataTask(with: url!, completionHandler: { (data, response, error) in
-            if error != nil {
-                print(error!)
+        let task = URLSession(configuration: .default).dataTask(with: url) { (data, response, error) in
+            guard error == nil else {
+                print("error: \(String(describing: error))")
+                self.image = (UIImage(named: "default.png"))
                 return
             }
-            
+            guard response != nil else {
+                print("no response")
+                self.image = (UIImage(named: "default.png"))
+                return
+            }
+            guard data != nil else {
+                print("no data")
+                self.image = (UIImage(named: "default.png"))
+                return
+            }
             DispatchQueue.main.async {
                 if let image = UIImage(data: data!) {
                     imageCache.setObject(image, forKey: urlString as NSString)
                     self.image = image
                 }
             }
-            
-        }).resume()
+        }; task.resume()
     }
 }

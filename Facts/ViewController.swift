@@ -23,35 +23,29 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "factCell", for: indexPath) as! TableViewCell
-        print("4")
+        cell.titleLbl.sizeToFit()
+        cell.descLbl.sizeToFit()
         
         //getting the details for the specified row
         let row = self.rows[indexPath.row]
-        print("5")
+        
         //displaying values
         cell.titleLbl.text = row.title ?? ""
         cell.descLbl.text = row.description ?? ""
-        
         if let imageUrl = row.imageHref {
-            cell.factRowImage.loadImageUsingCache(withUrl: imageUrl)
+            cell.factRowImage.loadImageUsingCache(imageUrl)
         }else{
+            print("No URL")
             cell.factRowImage.image = UIImage(named: "default.png")
-            
         }
-        //        let image = UIImage(named:row.imageHref!)
-        //        cell.setPostedImage(image: image!)
-        
         return cell
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         downloadJson()
-        
-        //        facesTableView.estimatedRowHeight = 200
-        //        facesTableView.rowHeight = UITableViewAutomaticDimension
-        //
-        //displaying data in tableview
+        facesTableView.estimatedRowHeight = 200
+        facesTableView.rowHeight = UITableViewAutomaticDimension
         self.facesTableView.reloadData()
     }
     
@@ -62,7 +56,6 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                 print("something is wrong")
                 return
             }
-            print("downloaded")
             print(data)
             do
             {
